@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<title>Hello</title>
+<head>
+  <!-- Bootstrap core CSS -->
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">EmotionTweets</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Services</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+ <div id="mapid">
+ </div>
+
+ <p id="neshto"></p>
+  
+
+</body>
+
+<style>
+  #mapid {
+    height: 1000px;
+    width: 1000px;
+    margin-top: 50px;
+    margin-left: 50px;
+    margin-bottom: 15px;
+  }
+</style>
+<script>
+  var truc = '{{ geocode_js|tojson }};'
+  var mymap = L.map('mapid');
+  var feelings = '{{feelings_js|tojson}}';
+  var new_feelings = JSON.parse(feelings);
+
+  document.getElementById("neshto").innerHTML = JSON.stringify(new_feelings);
+
+function getmax(reg) {
+  flg = "";
+  max = 0;
+  for(var each in new_feelings[reg]) {
+    if(new_feelings[reg].hasOwnProperty(each)) {    
+      if(new_feelings[reg][each]>max) {
+        max = new_feelings[reg][each];
+       flg = each;
+    }
+
+}
+}
+
+result = [];
+result.push(flg,max);
+return result;
+}
+
+
+ L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    maxZoom: 9,
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1IjoibmlraWJnOTMiLCJhIjoiY2s2NDlpZnIxMGVwdTNvcGJ3dnI4Mmh3NiJ9.OCzqmlwMExgA6uDj8biVVw'
+}).addTo(mymap);
+
+ of = JSON.parse(truc.slice(0,-1));
+ var arr = [];
+ for(var each in of) {
+  var value = of[each];
+  arr.push(value);
+ }
+var vounds = new L.LatLngBounds(arr);
+var i = 0;
+for(var cd in arr) {
+  var opa = getmax(Object.keys(new_feelings)[i]);
+  if(opa[0]!="") {
+  var circle = L.circle(arr[cd], {
+	  color: "red",
+	  fillcolor: "#f03",
+	  fillopacity: 0.5,
+	  radius: 5000,
+  }).bindTooltip(opa[0], {permanent: true}}.addTo(mymap);
+}
+  i=i+1;
+}
+
+ mymap.fitBounds(vounds);
+
+
+ </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</html>
