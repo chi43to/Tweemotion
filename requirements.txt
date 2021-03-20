@@ -20,7 +20,7 @@ Flask-WTF==0.14.2
 future==0.16.0
 idna==2.7
 itsdangerous==1.1.0
-Jinja2==2.11.0
+Jinja2==2.11.3
 jmespath==0.9.4
 jsonschema==2.6.0
 MarkupSafe==1.1.1
